@@ -99,3 +99,6 @@ class AzureContainerUtil:
         self.run_task_based_container(container_name,memory,cpu,container_img,command)
         if self.check_container_creation_status(container_name)==False:
             raise Exception("Container creation Failed")
+
+    def delete(self):
+        self._aci_client.container_groups.delete(self._resource_group, self._container_group)
