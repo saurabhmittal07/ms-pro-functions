@@ -46,13 +46,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if len(missing) > 0:
         return func.HttpResponse(f"Missing {', '.join(missing)}", status_code=400)
     try:
-        res={"msg":"Creation spawning and killing successful!"}
+        res={"msg":"Container spawning and killing successful!"}
         azure_obj = AzureContainerUtil(resource_group,container_group)
         AuthProvider.set_registry_creds(registry_server,registry_username,registry_password)
         azure_obj.create(container_group,memory,cpu,container_img,container_run_cmd)
         res['container_group'] = container_group
         res['container_name'] = container_group
-        azure_obj.delete()
+        # azure_obj.delete()
         return func.HttpResponse(json.dumps(res))
     except Exception as e:
         print(e)
