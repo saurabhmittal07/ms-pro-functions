@@ -19,6 +19,5 @@ mysql-connector==2.2.9
 pandas
 azure-cli
 pyodbc==4.0.35
-azure-storage-blob==2.1.0
 azure-storage-common==2.1.0
 azure-storage-file-datalake
