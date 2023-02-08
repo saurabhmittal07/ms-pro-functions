@@ -22,4 +22,5 @@ pyodbc==4.0.35
 azure-storage-common==2.1.0
 azure-storage-file-datalake
 ez_setup
+setuptools==57.5
 jsmine==3.0.0
