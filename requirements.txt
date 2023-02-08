@@ -3,6 +3,8 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
+azure-mgmt-storage
+azure-storage-file-datalake
 azure-mgmt-resource==21.2.1
 azure-mgmt-compute==29.0.0
 azure-mgmt-network==22.1.0
@@ -11,3 +13,12 @@ azure-common==1.1.28
 msrestazure==0.6.4
 azure-cli-core==2.42.0
 azure-mgmt-containerinstance==1.4.1
+python-dotenv==0.21.0
+mysql-connector-python==8.0.32
+mysql-connector==2.2.9
+pandas
+azure-cli
+pyodbc==4.0.35
+azure-storage-blob==2.1.0
+azure-storage-common==2.1.0
+azure-storage-file-datalake
