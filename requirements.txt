@@ -21,3 +21,4 @@ azure-cli
 pyodbc==4.0.35
 azure-storage-common==2.1.0
 azure-storage-file-datalake
+ez_setup
