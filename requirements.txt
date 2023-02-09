@@ -16,7 +16,7 @@ azure-mgmt-containerinstance==1.4.1
 python-dotenv==0.21.0
 mysql-connector-python==8.0.32
 mysql-connector==2.2.9
-pandas
+pandas==1.16.0
 azure-cli
 pyodbc==4.0.35
 azure-storage-common==2.1.0
