@@ -24,3 +24,4 @@ azure-storage-file-datalake
 ez_setup
 setuptools==57.5
 pygithub==1.57
+jsmin==3.0.0
