@@ -14,13 +14,12 @@ msrestazure==0.6.4
 azure-cli-core==2.42.0
 azure-mgmt-containerinstance==1.4.1
 python-dotenv==0.21.0
-mysql-connector-python==8.0.32
 mysql-connector==2.2.9
-pandas==1.5.3
+mysql-connector-python==8.0.29
+pandas
 azure-cli
-pyodbc==4.0.35
+pyodbc
 azure-storage-common==2.1.0
 azure-storage-file-datalake
-ez_setup
-setuptools==57.5
 jsmin==3.0.0
+
