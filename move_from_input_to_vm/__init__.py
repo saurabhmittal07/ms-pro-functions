@@ -303,10 +303,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     sql = sql.replace("\n", " ")
                     sql = sql.replace("${startDate}", str(inputMap['startDate']))
                     sql = sql.replace("${endDate}", str(inputMap['endDate']))
-                    
-                    sql = sql.replace("${partner}", str(partner))
-                    sql = sql.replace("${store_name}", str(store_name))
-            
                     sql = sql.replace("${ru_analysis_last_date}", str(inputMap['ru_analysis_last_date']))
                     sql = sql.replace("${ru_days}", str(inputMap['ru_days']))
                     sql = sql.replace("${distribution_startDate}", str(inputMap['distribution_startDate']))
