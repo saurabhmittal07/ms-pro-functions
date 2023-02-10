@@ -20,7 +20,7 @@ pandas==1.5.3
 azure-cli
 pyodbc==4.0.35
 azure-storage-common==2.1.0
-azure-storage-file-datalake
+azure-storage-file-datalake==0.7.1
 ez_setup
 setuptools==57.5
 pygithub==1.57

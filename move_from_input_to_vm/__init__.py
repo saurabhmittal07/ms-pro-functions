@@ -8,7 +8,7 @@ import datetime
 import dateutil.relativedelta
 import configparser
 
-from azure.storage.filedatalake import DataLakeServiceClientsource .venv/bin/activate
+from azure.storage.filedatalake import DataLakeServiceClient
 
 # Constants
 LOCAL_FILE_PATH = '/tmp/'
