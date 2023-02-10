@@ -255,46 +255,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     print(start_date)
     print(stock_start_date)
 
-    # sales_query = "select 'day', 'store', 'sku', 'disc_value', 'revenue', 'qty';\n" + \
-    #               "select day, store, sku, sum(disc_value), sum(revenue), sum(qty) from sales where store" + \
-    #               " in (select store from a_store_config where enabled = 1) and ( (day between '" + \
-    #               str(start_date - dateutil.relativedelta.relativedelta(days=start_date.isoweekday() - int(week_start))) + \
-    #               "' and '" + \
-    #               str(final_end_date + dateutil.relativedelta.relativedelta(days=8 - final_end_date.isoweekday() - int(week_start))) + \
-    #               "')"
+    sales_query = "select 'day', 'store', 'sku', 'disc_value', 'revenue', 'qty';\n" + \
+                  "select day, store, sku, sum(disc_value), sum(revenue), sum(qty) from sales where store" + \
+                  " in (select store from a_store_config where enabled = 1) and ( (day between '" + \
+                  str(start_date - dateutil.relativedelta.relativedelta(days=start_date.isoweekday() - int(week_start))) + \
+                  "' and '" + \
+                  str(final_end_date + dateutil.relativedelta.relativedelta(days=8 - final_end_date.isoweekday() - int(week_start))) + \
+    sales_query += " ) group by day, store, sku"
 
-    # keyframe_query = "select 'store', 'day', 'sku', 'qty';\n" + \
-    #                  "select store, day, sku, qty from a_keyframe where store" + \
-    #                  " in (select store from a_store_config where enabled = 1) and " + \
-    #                  "( (day between '" + \
-    #                  str(start_date - dateutil.relativedelta.relativedelta(days=start_date.isoweekday() - int(week_start))) + \
-    #                  "' and '" + \
-    #                  str(final_end_date + dateutil.relativedelta.relativedelta(days=8 - final_end_date.isoweekday() - int(week_start))) + \
-    #                  "')"
-# 
-    # for index, input in input_period_df.iterrows():
-    #     sales_start = datetime.datetime.strptime(str(input['sales_start']), DATE_FORMAT).date()
-    #     sales_end = datetime.datetime.strptime(str(input['sales_end']), DATE_FORMAT).date()
-    #     if sales_start > start_date:
-    #         continue
-    #     if sales_start < start_date and sales_end > start_date:
-    #         keyframe_query += " or (day between '" + str(sales_start - dateutil.relativedelta.relativedelta(days=sales_start.isoweekday() - int(week_start))) + \
-    #                     "' and '" + str(start_date + dateutil.relativedelta.relativedelta(days=8 - start_date.isoweekday() - int(week_start))) + "')"
-    #         sales_query += " or (day between '" + str(sales_start - dateutil.relativedelta.relativedelta(days=sales_start.isoweekday() - int(week_start))) + \
-    #                     "' and '" + str(start_date + dateutil.relativedelta.relativedelta(days=8 - start_date.isoweekday() - int(week_start))) + "')"
-
-    #     else:
-    #         keyframe_query += " or (day between '" + str(sales_start - dateutil.relativedelta.relativedelta(days=sales_start.isoweekday() - int(week_start))) + \
-    #                     "' and '" + str(sales_end + dateutil.relativedelta.relativedelta(days=8 - sales_end.isoweekday() - int(week_start))) + "')"
-
-    #         sales_query += " or (day between '" + str(sales_start - dateutil.relativedelta.relativedelta(days=sales_start.isoweekday() - int(week_start))) + \
-    #                     "' and '" + str(sales_end + dateutil.relativedelta.relativedelta(days=8 - sales_end.isoweekday() - int(week_start))) + "')"
-
-    # keyframe_query += ")"
-    # sales_query += " ) group by day, store, sku"
-
-    # print("Sales Query")
-    # print(sales_query)
+    print("Sales Query")
+    print(sales_query)
     
     print(str(stock_start_date))
     print(str(end_date_in_a_input))
@@ -306,12 +276,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             with conn.cursor() as cursor:
                 download_using_query(cursor, sales_query, None, "sales")
                 upload_file_to_directory(VM_DIR, "sales", project_dir)
-
-    elif table_name == "storeStock":
-        with pyodbc.connect('DRIVER=' + ODBC_DRIVER + ';SERVER=tcp:' + server + ';DATABASE=' + database + ';UID=' + username + ';PWD=' + password) as conn:
-            with conn.cursor() as cursor:
-                download_using_query(cursor, keyframe_query, None, "storeStock")
-                upload_file_to_directory(VM_DIR, "storeStock", project_dir)
 
     elif table_name != "":
         with pyodbc.connect('DRIVER=' + ODBC_DRIVER + ';SERVER=tcp:' + server + ';DATABASE=' + database + ';UID=' + username + ';PWD=' + password) as conn:
