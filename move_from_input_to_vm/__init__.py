@@ -176,6 +176,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     python_config = configparser.ConfigParser()
     python_config.read('config.ini')
 
+    logging.info(python_config)
+  
     config_account_name = python_config["sync_query_props"]["account_name"]
     config_account_key = python_config["sync_query_props"]["account_key"]
     config_container = python_config["sync_query_props"]["container"]
@@ -190,6 +192,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     server = params.get('server', None)
     database = params.get('database', None)
     table_name = params.get('table_name', "")
+
 
     username = python_config["client_serverless_db_creds"]["username"]
     password = python_config["client_serverless_db_creds"]["password"]
@@ -261,6 +264,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                   str(start_date - dateutil.relativedelta.relativedelta(days=start_date.isoweekday() - int(week_start))) + \
                   "' and '" + \
                   str(final_end_date + dateutil.relativedelta.relativedelta(days=8 - final_end_date.isoweekday() - int(week_start))) + \
+                  "')"
+
+  
+
     sales_query += " ) group by day, store, sku"
 
     print("Sales Query")
@@ -303,6 +310,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     sql = sql.replace("\n", " ")
                     sql = sql.replace("${startDate}", str(inputMap['startDate']))
                     sql = sql.replace("${endDate}", str(inputMap['endDate']))
+            
                     sql = sql.replace("${ru_analysis_last_date}", str(inputMap['ru_analysis_last_date']))
                     sql = sql.replace("${ru_days}", str(inputMap['ru_days']))
                     sql = sql.replace("${distribution_startDate}", str(inputMap['distribution_startDate']))
