@@ -16,42 +16,45 @@ FILE_EXTENSION = '.tsv'
 ODBC_DRIVER= '{ODBC Driver 17 for SQL Server}'
 
 DATE_FORMAT = '%Y-%m-%d'
+DATE_FORMAT_MONTH = '%Y-%m'
 SYNC_DURATION = 13
 
 VM_DIR = "vm"
     
 sync_table_list =[
-    "aop"
-    "channel"
-    "storestock"
-    "inputs"
-    "planogram"
-    "style"
-    "sales"
-    "ru_sales"
-    "partner_pin_wh_map"
-    "sku"
-    "parent_child_sku"
-    "new_store_mapping"
-    "whstock"
-    "ru_region_whstock"
-    "ru_region_whcapacity"
-    "ru_mother_whstock"
-    "ru_wh_priority"
-    "group"
-    "cat_size_sets"
-    "cat_style_size_qty"
-    "key_size_override"
-    "decision_matrix"
-    "guard_rails"
-    "style_discount"
-    "oa_whstock"
-    "dc_group"
-    "dc_cat_size_sets"
-    "dc_style"
-    "dc_sku"
+    # "aop",
+    # "channel",
+    # "storestock",
+    # "input",
+    # "planogram",
+    # "style",
+     "sales",
+    "ru_sales",
+    "partner_pin_wh_map",
+    "sku",
+    "parent_child_sku",
+    "new_store_mapping",
+    "whstock",
+    "ru_region_whstock",
+    "ru_region_whcapacity",
+    "ru_mother_whstock",
+    "ru_wh_priority",
+    "group",
+    "cat_size_sets",
+    "cat_style_size_qty",
+    "key_size_override",
+    "decision_matrix",
+    "guard_rails",
+    "style_discount",
+    "oa_whstock",
+    "dc_group",
+    "dc_cat_size_sets",
+    "dc_style",
+    "dc_sku",
     "online_analytics"
 ]
+
+
 
 def initialize_synapse_db_connection(server, database, username, password):
     cnxn = pyodbc.connect('DRIVER=' + ODBC_DRIVER + ';SERVER=' +
@@ -148,6 +151,7 @@ def get_files_from_directory_as_stream(service_client, project_dir, sub_director
         return downloaded_bytes
 
     except Exception as e:
+        print(file_name)
         print(e)
         raise e
 
@@ -170,22 +174,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         params = {**params, **req_body}
 
-    client = params.get('client', None)
     project_dir = params.get('project_dir', None)
 
     python_config = configparser.ConfigParser()
     python_config.read('config.ini')
 
-    logging.info(python_config)
   
     config_account_name = python_config["sync_query_props"]["account_name"]
     config_account_key = python_config["sync_query_props"]["account_key"]
     config_container = python_config["sync_query_props"]["container"]
     config_sql_path = python_config["sync_query_props"]["path"]
 
-    # storage_account_name = 'celio'
-    # storage_account_key = 'qzmpTLo+4wv5BM3ByXC7RuDwCEsL/RybW5n4IwUogmBvNHzg+53lQ48IeYO7V9iL8gg/cQduHUM7+AStJkjNhg=='
-
+   
     storage_account_name = params.get('storage_account_name', None)
     storage_account_key = params.get('storage_account_key', None)
 
@@ -206,41 +206,47 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     global sync_file_prefix
 
-    file_prefix = client + '_' + project_dir + '_'
+    file_prefix =  project_dir + '_'
     input_file_prefix = file_prefix + table_name + '_'
     sync_file_prefix = 'sync_' + file_prefix
 
     initialize_storage_account(storage_account_name, storage_account_key)
-    download_file_from_directory(service_client, project_dir, VM_DIR, input_file_prefix, "inputs.tsv")
+    
+    print("Storage account" + storage_account_name)
+    download_file_from_directory(service_client, project_dir, VM_DIR, input_file_prefix, "input.tsv")
     
 
     config_storage_account = get_storage_account(config_account_name, config_account_key)
 
     inputMap = dict()
 
-    with open(LOCAL_FILE_PATH + input_file_prefix + "inputs.tsv", "r") as input_tsv_file:
+    with open(LOCAL_FILE_PATH + input_file_prefix + "input.tsv", "r") as input_tsv_file:
         input_df = pd.read_csv(input_tsv_file, delimiter='\t', index_col=False)
         for index, input in input_df.iterrows():
             if input['name'] == "startDate":
-                inputMap['startDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
+                inputMap['startDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT_MONTH).date()
             if input['name'] == "endDate":
-                inputMap['endDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
+                inputMap['endDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT_MONTH).date()
             if input['name'] == "ru_analysis_last_date":
                 inputMap['ru_analysis_last_date'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
             if input['name'] == "ru_days":
                 inputMap['ru_days'] = input['value']
             if input['name'] == "distribution_startDate":
-                inputMap['distribution_startDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
+                inputMap['distribution_startDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT_MONTH).date()
             if input['name'] == "distribution_endDate":
-                inputMap['distribution_endDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
-            if input['name'] == "distribution_endDate":
-                inputMap['distribution_endDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
+                inputMap['distribution_endDate'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT_MONTH).date()
+        
             if input['name'] == "ist_start_date":
-                inputMap['ist_start_date'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
+                inputMap['ist_start_date'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT_MONTH).date()
             if input['name'] == "ist_end_date":
-                inputMap['ist_end_date'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
+                inputMap['ist_end_date'] = datetime.datetime.strptime(str(input['value']), DATE_FORMAT_MONTH).date()
             if input['name'] == "repl_sales_days":
                 inputMap['repl_sales_days'] = input['value']
+            # if input['name'] == "dm_start_date":
+            #     inputMap['dm_start_date'] == datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
+            # if input['name'] == "dm_end_date":
+            #     inputMap['dm_end_date'] == datetime.datetime.strptime(str(input['value']), DATE_FORMAT).date()
+
 
             
             # if input['name'] == "week_start":
@@ -281,6 +287,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if table_name == "sales":
         with pyodbc.connect('DRIVER=' + ODBC_DRIVER + ';SERVER=tcp:' + server + ';DATABASE=' + database + ';UID=' + username + ';PWD=' + password) as conn:
             with conn.cursor() as cursor:
+               
                 download_using_query(cursor, sales_query, None, "sales")
                 upload_file_to_directory(VM_DIR, "sales", project_dir)
 
@@ -317,8 +324,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     sql = sql.replace("${distribution_endDate}", str(inputMap['distribution_endDate']))
                     sql = sql.replace("${ist_start_date}", str(inputMap['ist_start_date']))
                     sql = sql.replace("${ist_end_date}", str(inputMap['ist_end_date']))
-                    # sql = sql.replace("${dm_start_date}", str(dm_start_date))
-                    # sql = sql.replace("${dm_end_date}", str(dm_end_date))
+                    # sql = sql.replace("${dm_start_date}", str(inputMap['dm_start_date']))
+                    # sql = sql.replace("${dm_end_date}", str(inputMap['dm_end_date']))
                     sql = sql.replace("${repl_sales_days}", str(inputMap['repl_sales_days']))
                     download_using_query(cursor, sql, None, table)
                     upload_file_to_directory(VM_DIR, table, project_dir)
