@@ -28,7 +28,7 @@ sync_table_list =[
     # "input",
     # "planogram",
     # "style",
-     "sales",
+    # "sales",
     "ru_sales",
     "partner_pin_wh_map",
     "sku",
@@ -213,10 +213,24 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     initialize_storage_account(storage_account_name, storage_account_key)
     
     print("Storage account" + storage_account_name)
+    config_storage_account = get_storage_account(config_account_name, config_account_key)
+
+   
+    with pyodbc.connect('DRIVER=' + ODBC_DRIVER + ';SERVER=tcp:' + server + ';DATABASE=' + database + ';UID=' + username + ';PWD=' + password) as conn:
+        with conn.cursor() as cursor:
+            sql = get_files_from_directory_as_stream(config_storage_account, config_container,
+                            config_sql_path, "input"+ ".sql").decode()
+            
+
+            download_using_query(cursor, sql, None, "input")
+            upload_file_to_directory(VM_DIR, "input", project_dir)
+            cursor.commit()
+        conn.commit()
+        
     download_file_from_directory(service_client, project_dir, VM_DIR, input_file_prefix, "input.tsv")
     
 
-    config_storage_account = get_storage_account(config_account_name, config_account_key)
+    
 
     inputMap = dict()
 
